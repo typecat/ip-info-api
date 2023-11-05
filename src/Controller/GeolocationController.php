@@ -33,7 +33,7 @@ class GeolocationController extends AbstractController
     public function index(): Response
     {
         return new Response(
-            '<html><body><p>Request geolocation information of an IP.</p></body></html>'
+            '<html><body><p>API for requesting geolocation information.</p></body></html>'
         );
     }
 
@@ -42,7 +42,7 @@ class GeolocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    #[Route('/geolocation/{ip}', name: 'get_ip_geolocation', requirements: ['ip' => '(\d{3}\.){3}\d{3}'], methods: ["GET"])]
+    #[Route('/geolocation/{ip}', name: 'get_ip_geolocation', requirements: ['ip' => '(\d{1,3}\.){3}\d{1,3}'], methods: ["GET"])]
     #[IsGranted("IS_AUTHENTICATED")]
     public function requestGeolocationOfIp(string $ip): JsonResponse
     {

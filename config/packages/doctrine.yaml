@@ -22,7 +22,7 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
 
-when@test:
+when@dev:
     doctrine:
         dbal:
             # "TEST_TOKEN" is typically set by ParaTest

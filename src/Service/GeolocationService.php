@@ -8,6 +8,11 @@ namespace App\Service;
 
 class GeolocationService
 {
+    /**
+     * @param string $ip
+     *
+     * @return string[]
+     */
     public function getCityByIp(string $ip): array
     {
         //TODO: Connect to geolocation service
@@ -16,7 +21,7 @@ class GeolocationService
         $information = [
             'ip' => $ip,
             'city' => 'test',
-            'state' => 'test'
+            'country' => 'test'
         ];
 
         return $information;

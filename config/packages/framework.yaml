@@ -18,7 +18,7 @@ framework:
     php_errors:
         log: true
 
-when@test:
+when@dev:
     framework:
         test: true
         session:
