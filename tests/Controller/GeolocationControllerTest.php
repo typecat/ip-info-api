@@ -31,14 +31,14 @@ class GeolocationControllerTest extends WebTestCase
     }
     public function testApiRequestNoAuthentication(): void
     {
-        $this->client->request('GET', '/api/geolocation/127.0.0.1');
+        $this->client->request('GET', '/api/geolocation/8.8.8.8');
         self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
     public function testApiRequestInvalidAuthentication(): void
     {
         $this->client->request(
             'GET',
-            '/api/geolocation/127.0.0.1',
+            '/api/geolocation/8.8.8.8',
             server: [
                 "HTTP_X_AUTH_TOKEN" => 'invalidtoken'
             ],
@@ -70,7 +70,7 @@ class GeolocationControllerTest extends WebTestCase
         $user = $this->userRepository->findOneBy([]);
         $this->client->request(
             'GET',
-            '/api/geolocation/127.0.0.1',
+            '/api/geolocation/8.8.8.8',
             server: [
                 "HTTP_X_AUTH_TOKEN" => $user->getToken()
             ],

@@ -6,7 +6,8 @@
 
 namespace App\Controller;
 
-use App\Service\GeolocationService;
+use App\Model\IpDataInterface;
+use App\Service\IpInfoService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,9 +21,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class GeolocationController extends AbstractController
 {
     /**
-     * @param GeolocationService $geolocationService
+     * @param IpInfoService $ipInfoService
      */
-    public function __construct(private GeolocationService $geolocationService)
+    public function __construct(private IpInfoService $ipInfoService)
     {
     }
 
@@ -52,8 +53,9 @@ class GeolocationController extends AbstractController
     #[IsGranted("IS_AUTHENTICATED")]
     public function requestGeolocationOfIp(string $ip): JsonResponse
     {
-        $info = $this->geolocationService->getCityByIp($ip);
+        /**@var IpDataInterface $info */
+        $info = $this->ipInfoService->getGeoInformation($ip);
 
-        return $this->json($info);
+        return $this->json($info->toArray());
     }
 }
