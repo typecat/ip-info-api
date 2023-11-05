@@ -27,7 +27,7 @@ class GeolocationControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/api/geolocation');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('p', 'API for requesting geolocation information');
+        self::assertSelectorTextContains('h1', 'API for requesting geolocation information');
     }
     public function testApiRequestNoAuthentication(): void
     {
