@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   php:
-    container_name: geolocation-api-web
+    container_name: ip-info-api-web
     image: ${IMAGES_PREFIX:-}app-php
     restart: unless-stopped
     environment:
@@ -43,7 +43,7 @@ services:
 
 ###> doctrine/doctrine-bundle ###
   database:
-    container_name: geolocation-api-db
+    container_name: ip-info-api-db
     image: postgres:${POSTGRES_VERSION:-15}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}

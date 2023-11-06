@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Controller for geolocation API
  */
 #[Route("/api", "api_")]
-class GeolocationController extends AbstractController
+class IpInfoController extends AbstractController
 {
     /**
      * @param IpInfoService $ipInfoService
@@ -30,16 +30,16 @@ class GeolocationController extends AbstractController
     /**
      * @return Response
      */
-    #[Route('/geolocation', name: 'geolocation_main')]
+    #[Route('/', name: 'geolocation_main')]
     public function index(): Response
     {
         // TODO: describe how to use the API in a nice and readable way (e.g. swagger)
         return new Response(
             '<html><body>' .
-            '<h1>API for requesting geolocation information.</h1>' .
+            '<h1>API for requesting information of an IP address</h1>' .
             '<h2>How to use</h2>' .
-            '<p>Request structure:</p>' .
-            '<p>GET https://<b>{host}</b>/api/ip/<b>{ip}</b><br>Accept: application/json<br>X-Auth-Token: <b>{auth-token}</b></p>' .
+            '<p>Request geolocation:</p>' .
+            '<p>GET https://<b>{host}</b>/api/geolocation/<b>{ip}</b><br>Accept: application/json<br>X-Auth-Token: <b>{auth-token}</b></p>' .
             '</body></html>'
         );
     }
@@ -49,7 +49,7 @@ class GeolocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    #[Route('/ip/{ip}', name: 'get_ip_geolocation', requirements: ['ip' => '(\d{1,3}\.){3}\d{1,3}'], methods: ["GET"])]
+    #[Route('/geolocation/{ip}', name: 'get_ip_geolocation', requirements: ['ip' => '(\d{1,3}\.){3}\d{1,3}'], methods: ["GET"])]
     #[IsGranted("IS_AUTHENTICATED")]
     public function requestGeolocationOfIp(string $ip): JsonResponse
     {

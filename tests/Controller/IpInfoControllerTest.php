@@ -7,10 +7,8 @@ use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class GeolocationControllerTest extends WebTestCase
+class IpInfoControllerTest extends WebTestCase
 {
     private UserRepository $userRepository;
     private KernelBrowser $client;
@@ -24,21 +22,21 @@ class GeolocationControllerTest extends WebTestCase
     }
     public function testEntypoint(): void
     {
-        $crawler = $this->client->request('GET', '/api/geolocation');
+        $crawler = $this->client->request('GET', '/api/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'API for requesting geolocation information');
+        self::assertSelectorTextContains('h1', 'API for requesting information of an IP address');
     }
     public function testApiRequestNoAuthentication(): void
     {
-        $this->client->request('GET', '/api/ip/8.8.8.8');
+        $this->client->request('GET', '/api/geolocation/8.8.8.8');
         self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
     public function testApiRequestInvalidAuthentication(): void
     {
         $this->client->request(
             'GET',
-            '/api/ip/8.8.8.8',
+            '/api/geolocation/8.8.8.8',
             server: [
                 "HTTP_X_AUTH_TOKEN" => 'invalidtoken'
             ],
@@ -50,7 +48,7 @@ class GeolocationControllerTest extends WebTestCase
         $user = $this->userRepository->findOneBy([]);
         $this->client->request(
             'GET',
-            '/api/ip/invalidip',
+            '/api/geolocation/invalidip',
             server: [
                 "HTTP_X_AUTH_TOKEN" => $user->getToken()
             ],
@@ -70,7 +68,7 @@ class GeolocationControllerTest extends WebTestCase
         $user = $this->userRepository->findOneBy([]);
         $this->client->request(
             'GET',
-            '/api/ip/8.8.8.8',
+            '/api/geolocation/8.8.8.8',
             server: [
                 "HTTP_X_AUTH_TOKEN" => $user->getToken()
             ],
