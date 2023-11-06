@@ -1,0 +1,16 @@
+# see https://symfony.com/doc/current/rate_limiter.html
+framework:
+    rate_limiter:
+        authenticated_api:
+            # use 'sliding_window' if you prefer that policy
+            policy: 'fixed_window'
+            limit: 5000
+            interval: '60 minutes'
+
+when@dev:
+    framework:
+        rate_limiter:
+            authenticated_api:
+                ### Set very low limit for test/dev purposes
+                limit: 5
+                interval: '1 minute'

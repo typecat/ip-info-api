@@ -20,7 +20,7 @@ class IpInfoControllerTest extends WebTestCase
         $entityManager = self::getContainer()->get('doctrine')->getManager();
         $this->userRepository = $entityManager->getRepository(User::class);
     }
-    public function testEntypoint(): void
+    public function testEntryPoint(): void
     {
         $crawler = $this->client->request('GET', '/api/');
 
@@ -82,4 +82,18 @@ class IpInfoControllerTest extends WebTestCase
         $result = json_decode($response->getContent(), true);
         $this->testGeolocationFormat($result);
     }
+//    public function testApiRequestooManyRequests(): void
+//    {
+//        $user = $this->userRepository->findOneBy([]);
+//        for ($i = 0; $i < 6; $i++) {
+//            $this->client->request(
+//                'GET',
+//                '/api/geolocation/8.8.8.8',
+//                server: [
+//                    "HTTP_X_AUTH_TOKEN" => $user->getToken()
+//                ],
+//            );
+//        }
+//        self::assertResponseStatusCodeSame(Response::HTTP_TOO_MANY_REQUESTS);
+//    }
 }
