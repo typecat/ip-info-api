@@ -33,7 +33,7 @@ The API can throw following responses:
 - `429 / HTTP_TOO_MANY_REQUESTS`
 
 The requests are handled by the [\App\Controller\IpInfoController](src%2FController%2FIpInfoController.php). For simplicity,
-the validation of the provided IP is implemented via the route requirement argument. A custom Validator 
+the validation of the provided IP is implemented via the route requirement argument. A custom validator 
 could be implemented in a real project, if a more detailed error information should be displayed to the user.
 
 The controller uses the [\App\Service\IpInfoService](src%2FService%2FIpInfoService.php) to fetch the necessary
@@ -42,7 +42,8 @@ important functions (like `toArray()`) are secured by the [\App\Model\IpDataInte
 each of the DTOs is supposed to implement.
 Because this is just a prototype, no more inheritance of abstraction was introduced on this level. For a real project, or
 to provide this API as a public standalone package, a deeper abstraction could be introduced, so that parts (e.g.
-the geolocation package) could be easily replaced or extended.
+the geolocation package) could be easily replaced or extended. For instance, a converter with a converter interface
+could be used to transform the response data of the external service to the DTO.
 
 To ensure that not only the success, but also the error responses return json, 
 the [\App\Normalizer\ErrorNormalizer](src%2FNormalizer%2FErrorNormalizer.php) was introduced.
@@ -51,7 +52,7 @@ the [\App\Normalizer\ErrorNormalizer](src%2FNormalizer%2FErrorNormalizer.php) wa
 ### Security
 
 To showcase a security strategy a token based authentication method was used in this prototype.
-But it already features a user management (entity and repository), which can be extended with a registration function and
+But, it already features a user management (entity and repository), which can be extended with a registration function and
 a more complex authentication process (login, acquire token, use token for a specific time).
 Therefore, the [\App\Entity\User](src%2FEntity%2FUser.php) already has the following fields:
 
@@ -59,7 +60,7 @@ Therefore, the [\App\Entity\User](src%2FEntity%2FUser.php) already has the follo
 - password
 - roles
 
-See [Outlook/User management](#outlook-user-management) for suggestions on an advanced user management.
+See [Outlook/User management](#outlook-user-management) for suggestions on advanced user management.
 
 The token based authentication is handled by storing the user-based token in the `token` field of the user record,
 and providing it in the request via the `X-Auth-Token` header. The [\App\Security\TokenAuthenticator](src%2FSecurity%2FTokenAuthenticator.php)
@@ -74,7 +75,7 @@ like login throttling, should be considered.
 
 For testing of the API the testing framework PHPUnit is used. The tests currently consider the API requests 
 and the user entity object. To properly test the user authentication the [\App\Factory\UserFactory](src%2FFactory%2FUserFactory.php)
-and the [\App\DataFixtures\UserFixtures](src%2FDataFixtures%2FUserFixtures.php) were used to generate a proper user 
+and the [\App\DataFixtures\UserFixtures](src%2FDataFixtures%2FUserFixtures.php) were used to generate a fake user 
 record in the database (see setup section for usage).
 
 ## Outlook
@@ -82,9 +83,6 @@ record in the database (see setup section for usage).
 ### User management
 
 <a id="outlook-user-management"></a>
-
-For the registration and a login process, additional fields, e.g. for the creation, modification and last login time,
-should be introduced. Here
 
 A user management scenario with a registration and login could look like this:
 
@@ -131,8 +129,8 @@ be applied to different scenarios, e.g.:
 Choosing the right cache mechanism depends on the requirements to a software and the nature of its purpose. 
 The requirements to this prototype suggest following cache decisions:
 
-1. Cache on the server side to compensate a potential performance issue with the external service.
-2. Separate user data from data of the requested IP. (Different users might request the same information.)
+1. Cache on the server side to litmit requests to the external service (which can has limits itself), and also to compensate a potential performance issue with the external service.
+2. When caching, separate user data from data of the requested IP. (Different users might request the same information.)
 3. Use a custom cache tag for the IP data, to be able to flush it separately, and to avoid its flushing with other caches (except when flushing all). To start with, Symfony's native caching system can be used for that.
 4. Use load balancing to prevent overload of the application and/or the server.
 
