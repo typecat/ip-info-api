@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 /**
  * Controller for geolocation API
  */
-#[Route("/api", "api_")]
+#[Route("/api", "api_", format: 'json')]
 class IpInfoController extends AbstractController
 {
     /**
@@ -30,7 +30,7 @@ class IpInfoController extends AbstractController
     /**
      * @return Response
      */
-    #[Route('/', name: 'index')]
+    #[Route('/', name: 'index', format: 'html')]
     public function index(): Response
     {
         // TODO: describe how to use the API in a nice and readable way (e.g. swagger)
