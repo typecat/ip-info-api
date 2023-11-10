@@ -31,7 +31,7 @@ class ExceptionListener
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         $responseData = [
-            'status' => $exception->getStatusCode(),
+            'status' => $response->getStatusCode(),
             'message' => $this->debug ? $exception->getMessage() : 'An error occurred',
             'trace' => $this->debug ? $exception->getTrace() : 'Enable debug mode for details.',
         ];

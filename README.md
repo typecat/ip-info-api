@@ -24,7 +24,7 @@ The API is built according to the RESTful approach, and uses following routes:
 
 - `/api` → index action providing the API description. (Currently just plain text. In a real project,
 a more readable and descriptive method, like [Swagger UI](https://swagger.io/tools/swagger-ui/), should be used instead.)
-- `/api/geolocation/:ip` → GET request expecting an IP as parameter to obtain its geolocation
+- `/api/geolocation` → GET request expecting an IP as request body (`{"ip": "x.x.x.x"}`) to obtain its geolocation
 
 The API can throw following responses:
 - `200 / HTTP_OK`
@@ -32,9 +32,10 @@ The API can throw following responses:
 - `401 / HTTP_UNAUTHORIZED`
 - `429 / HTTP_TOO_MANY_REQUESTS`
 
-The requests are handled by the [\App\Controller\IpInfoController](src%2FController%2FIpInfoController.php). For simplicity,
-the validation of the provided IP is implemented via the route requirement argument. A custom validator 
-could be implemented in a real project, if a more detailed error information should be displayed to the user.
+The requests are handled by the [\App\Controller\IpInfoController](src%2FController%2FIpInfoController.php). The validation of the provided IP is implemented 
+with the help of an [IpRequestObject](App\Entity\IpRequestObject) using property validation constraints. The
+[\App\Service\IpInfoService](src%2FService%2FIpInfoService.php) takes care of the validation process, so the controller only need to throw different
+exceptions for different request issues.
 
 The controller uses the [\App\Service\IpInfoService](src%2FService%2FIpInfoService.php) to fetch the necessary
 information, which is returned as a DTO. For various cases, various DTOs can be used or overridden. The most

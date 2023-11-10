@@ -10,7 +10,9 @@ use App\Model\IpDataInterface;
 use App\Service\IpInfoService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -45,17 +47,36 @@ class IpInfoController extends AbstractController
     }
 
     /**
-     * @param string $ip
+     * @param Request $request
      *
      * @return JsonResponse
      */
-    #[Route('/geolocation/{ip}', name: 'get_ip_geolocation', requirements: ['ip' => '(\d{1,3}\.){3}\d{1,3}'], methods: ["GET"])]
+    #[Route('/geolocation', name: 'get_ip_geolocation', methods: ["GET"])]
     #[IsGranted("IS_AUTHENTICATED")]
-    public function requestGeolocationOfIp(string $ip): JsonResponse
+    public function requestGeolocationOfIp(Request $request): JsonResponse
     {
-        /**@var IpDataInterface $info */
-        $info = $this->ipInfoService->getGeoInformation($ip);
+        try {
+            $requestBody = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $jsonException) {
+            throw new BadRequestHttpException('Invalid request body: ' . $jsonException->getMessage());
+        }
 
+        if (isset($requestBody["ip"])) {
+            $errors = $this->ipInfoService->validateRequestedIp($requestBody["ip"]);
+            $errorMessage = '';
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $errorMessage .= $error->getPropertyPath() . ': ' . $error->getMessage() . '; ';
+                }
+                throw new BadRequestHttpException('Request body invalid. ' . count($errors) . ' errors found: ' . $errorMessage);
+            }
+
+        } else {
+            throw new BadRequestHttpException('No IP was provided. Please provide the IP in the request body.');
+        }
+
+        /**@var IpDataInterface $info */
+        $info = $this->ipInfoService->getGeoInformation($requestBody["ip"]);
         return $this->json($info->toArray());
     }
 }

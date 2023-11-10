@@ -7,7 +7,7 @@ use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
@@ -37,7 +37,7 @@ class IpInfoControllerTest extends WebTestCase
     public function testApiRequestNoAuthentication(): void
     {
         $this->expectException(AccessDeniedException::class);
-        $this->client->jsonRequest('GET', '/api/geolocation/8.8.8.8');
+        $this->client->jsonRequest('GET', '/api/geolocation');
         self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         self::assertResponseFormatSame("json");
     }
@@ -47,8 +47,11 @@ class IpInfoControllerTest extends WebTestCase
         $this->expectException(AuthenticationException::class);
         $this->client->jsonRequest(
             'GET',
-            '/api/geolocation/8.8.8.8',
-            server: [
+            '/api/geolocation',
+            [
+                'ip' => 'invalid-ip'
+            ],
+            [
                 "HTTP_X_AUTH_TOKEN" => 'invalidtoken'
             ],
         );
@@ -58,16 +61,19 @@ class IpInfoControllerTest extends WebTestCase
 
     public function testApiRequestInvalidRequestData(): void
     {
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(BadRequestHttpException::class);
         $user = $this->userRepository->findOneBy([]);
         $this->client->jsonRequest(
             'GET',
-            '/api/geolocation/invalidip',
-            server: [
+            '/api/geolocation',
+            [
+                'ip' => 'invalid-ip'
+            ],
+            [
                 "HTTP_X_AUTH_TOKEN" => $user->getToken()
             ],
         );
-        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         self::assertResponseFormatSame("json");
     }
 
@@ -84,17 +90,20 @@ class IpInfoControllerTest extends WebTestCase
         $user = $this->userRepository->findOneBy([]);
         $this->client->jsonRequest(
             'GET',
-            '/api/geolocation/8.8.8.8',
-            server: [
+            '/api/geolocation',
+            [
+                'ip' => '8.8.8.8'
+            ],
+            [
                 "HTTP_X_AUTH_TOKEN" => $user->getToken()
             ],
         );
 
-        self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertResponseFormatSame("json");
 
         $response = $this->client->getResponse();
+        self::assertResponseIsSuccessful();
         $result = json_decode($response->getContent(), true);
         $this->testGeolocationFormat($result);
     }
