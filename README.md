@@ -45,8 +45,9 @@ to provide this API as a public standalone package, a deeper abstraction could b
 the geolocation package) could be easily replaced or extended. For instance, a converter with a converter interface
 could be used to transform the response data of the external service to the DTO.
 
-To ensure that not only the success, but also the error responses return json, 
-the [\App\Normalizer\ErrorNormalizer](src%2FNormalizer%2FErrorNormalizer.php) was introduced.
+To ensure that error responses do not expose sensitive information
+the [App\EventListener\ExceptionListener](src%2FEventListener%2FExceptionListener.php) was introduced, which only
+shows the exception trace in debug mode.
 
 
 ### Security
@@ -129,7 +130,7 @@ be applied to different scenarios, e.g.:
 Choosing the right cache mechanism depends on the requirements to a software and the nature of its purpose. 
 The requirements to this prototype suggest following cache decisions:
 
-1. Cache on the server side to litmit requests to the external service (which can has limits itself), and also to compensate a potential performance issue with the external service.
+1. Cache on the server side to limit requests to the external service (which can has limits itself), and also to compensate a potential performance issue with the external service.
 2. When caching, separate user data from data of the requested IP. (Different users might request the same information.)
 3. Use a custom cache tag for the IP data, to be able to flush it separately, and to avoid its flushing with other caches (except when flushing all). To start with, Symfony's native caching system can be used for that.
 4. Use load balancing to prevent overload of the application and/or the server.
